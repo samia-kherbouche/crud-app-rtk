@@ -1,25 +1,31 @@
 import React ,{useState}from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 import Button from '../../components/Button'
 import TextField from '../../components/TextField'
-import { addUser } from './userSlice'
-import { v4 as uuidv4 } from 'uuid';
+import { editUser } from './userSlice'
 
-const AddUser = () => {
-  const dispatch=useDispatch()
+const EditUser = () => {
+    const dispatch=useDispatch()
+    const params =useParams()
+    console.log(params.id,'id')
+    const users=useSelector((store)=>store.users)
     const navigate=useNavigate()
+    const existingUser = users.filter(user => user.id == params.id);
+    console.log(existingUser,'existing')
+    const { name, email } = existingUser[0];
+    
     const [values, setValues] = useState({
-        name: '',
-        email: ''
-      });
-
-    const handleAddUser=()=>{
+      name,
+      email
+    });
+   
+    const handleEditUser=()=>{
         setValues({name:'',email:''})
-        dispatch(addUser({
-          id:uuidv4(),
-          name:values.name,
-          email:values.email
+        dispatch(editUser({
+            id:params.id,
+            name:values.name,
+            email:values.email
         }))
         navigate('/')
     }
@@ -40,9 +46,9 @@ const AddUser = () => {
         onChange={(e) => setValues({ ...values, email: e.target.value })}
         />
 
-        <Button onClick={handleAddUser}>Submit</Button>
+        <Button onClick={handleEditUser}>Edit</Button>
     </div>
   )
 }
 
-export default AddUser
+export default EditUser
